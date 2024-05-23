@@ -10,10 +10,7 @@ const aboutSchema = new mongoose.Schema({
     type: String,
   },
   mediaLinks: [String],
-  profileImage: {
-    type: String,
-  },
-  resume: {
+  profilePicture: {
     type: String,
   },
 });
