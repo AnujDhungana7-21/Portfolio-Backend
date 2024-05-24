@@ -12,7 +12,7 @@ const app = express();
 //routes and middleware
 app.use(express.json());
 app.use(Abouts);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); //it provide file from specific folder
 //port
 let Port = process.env.Port || 5000;
 app.listen(Port, () => {

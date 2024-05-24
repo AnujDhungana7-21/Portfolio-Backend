@@ -1,4 +1,5 @@
 import { About } from "../Model/aboutModel.js";
+import fs from "fs";
 export const getAbout = async (req, res, next) => {
   try {
     const Data = await About.find();
@@ -30,9 +31,8 @@ export const getAboutById = async (req, res, next) => {
 export const createAbout = async (req, res, next) => {
   try {
     const { fullName, jobTitle, description, mediaLinks } = req.body;
-    console.log(req.file);
     const profilePicture = req.file
-      ? req.file.path.replaceAll("\\", "/")
+      ? "http://localhost:8000/" + req.file.path.replaceAll("\\", "/")
       : null;
     const Add = await About.create({
       fullName,
@@ -48,6 +48,7 @@ export const createAbout = async (req, res, next) => {
   } catch (error) {
     return res.status(400).json({
       message: "failed",
+      error: error.message,
     });
   }
 };
@@ -55,6 +56,24 @@ export const createAbout = async (req, res, next) => {
 export const updateAbout = async (req, res, next) => {
   try {
     const id = req.params.id;
+    const { fullName, jobTitle, description, mediaLinks } = req.body;
+    const oldData = await About.findById(id);
+
+    let fileName;
+    if (req.file) {
+      let oldFilePath = oldData.profilePicture;
+      let localHostUrl = "http://localhost:8000/".length;
+      let path = oldFilePath.slice(localHostUrl);
+      fs.unlink(path, (err) => {
+        if (err) {
+          console.log("failed");
+        } else {
+          console.log("delete");
+        }
+      });
+      fileName = `${process.env.https + req.file.path.replaceAll("\\", "/")}`;
+      console.log(fileName);
+    }
     const update = await About.findByIdAndUpdate(
       id,
       {
@@ -62,6 +81,7 @@ export const updateAbout = async (req, res, next) => {
         jobTitle,
         description,
         mediaLinks,
+        profilePicture: fileName,
       },
       {
         new: true,
